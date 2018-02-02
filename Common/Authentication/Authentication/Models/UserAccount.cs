@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Common.Authentication.DBHandlers;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -17,6 +18,13 @@ namespace Common.Authentication.Models
         #endregion
 
         #region IUserAccount Interface
+        private UserAccountDbHandler _objects = new UserAccountDbHandler();
+        /// <summary>
+        /// The data manager for the UserAccount model. This performs
+        /// CRUD operations on the User table.
+        /// </summary>
+        public IDbHandler<IUserAccount> Objects { get { return _objects; } }
+
         /// <summary>
         /// <para>
         /// Implementation of <see cref="IUserAccount.Authenticate(string)"/>.
