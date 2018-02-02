@@ -2,3 +2,7 @@ URU4000B Scanner
 Product: https://www.newegg.com/Product/Product.aspx?Item=9SIA4W32RF7567&nm_mc=KNC-GoogleMKP-PC&cm_mmc=KNC-GoogleMKP-PC-_-pla-_-EC+-+Sensors+%26+Transducers-_-9SIA4W32RF7567&gclid=CjwKCAiA78XTBRBiEiwAGv7EKt31vYZxarQtuyi1qvu8R8K2M_Ilym9gfbGCFQH0p1MBYUhqFHDgKhoCt44QAvD_BwE&gclsrc=aw.ds
 To get input: https://www.youtube.com/watch?v=1psU4DLJSmI
 To process: https://www.youtube.com/watch?v=wxItILIPyTs
+
+
+
+https://tutorials-raspberrypi.com/how-to-use-raspberry-pi-fingerprint-sensor-authentication/

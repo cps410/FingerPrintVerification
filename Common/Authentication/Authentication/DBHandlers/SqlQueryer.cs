@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MySql.Data.MySqlClient;
+using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
@@ -10,18 +11,21 @@ namespace Common.Authentication.DBHandlers
     public class SqlQueryer
     {
         /// <summary>
-        /// The name of the server that hosts the database. This is
-        /// denoted in the connection string by the parameter
-        /// "Data Source".
+        /// The address of the server that hosts the database.
         /// 
         /// TODO: This is not working.
         /// </summary>
-        private string DataSource = "localhost:3306";
+        private string Server = "MySQL57";
+
+        /// <summary>
+        /// The port on the server that this database is listening on.
+        /// </summary>
+        private int Port = 3306;
 
         /// <summary>
         /// The name of the database that will be queried.
         /// </summary>
-        private string InitialCatelog = "auth_central_db";
+        private string Database = "auth_central_db";
 
         /// <summary>
         /// The username of the user trying to make a query to the
@@ -51,8 +55,13 @@ namespace Common.Authentication.DBHandlers
         {
             if (!testing)
             {
-                string connectionStr = $"Data Source={DataSource};Initial Catalog={InitialCatelog};User ID={UserId};Password={Password}";
-                this.Connection = new SqlConnection(connectionStr);
+                MySqlConnectionStringBuilder connectionString = new MySqlConnectionStringBuilder();
+                //connectionString.Port = (uint) Port;
+                connectionString.Server = Server;
+                connectionString.Database = Database;
+                connectionString.UserID = UserId;
+                connectionString.Password = Password;
+                this.Connection = new SqlConnection(connectionString.ToString());
 
                 this.Initialize();
             }
