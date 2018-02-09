@@ -1,1 +1,1 @@
-test = 6
+def set_user_logged_in(user, app):
