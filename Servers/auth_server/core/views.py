@@ -7,8 +7,10 @@ from django.shortcuts import render
 
 from ezi.views import ModelCrudApiView, ApiView
 
+from core.models import AuthUser
+
 class AuthUserApiView(ModelCrudApiView):
 
-    model = get_user_model()
+    model = AuthUser
 
     allowed_methods = ("GET")

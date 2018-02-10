@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 
 from django.contrib import admin
 
-from core.models import AuthUser
+from core.models import AuthUser, SecurityQuestion, Application
 
 # Register your models here.
-admin.site.register(AuthUser)
+admin.site.register([AuthUser, SecurityQuestion, Application])

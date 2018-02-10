@@ -2,10 +2,11 @@
 from __future__ import unicode_literals
 
 from django.conf import settings
-from django.contrib.auth import get_user_model
+from django.contrib.auth import get_user_model, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.core.urlresolvers import reverse_lazy
+from django.core.urlresolvers import reverse, reverse_lazy
+from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_protect
@@ -45,11 +46,24 @@ class LoginView(FormView):
         return super(LoginView, self).form_valid(form)
 
 
+@login_required
+def logout_view(request):
+    """
+    Logs the currently logged in user out of the session and redirects them to
+    the login page.
+
+    If the user already isn't logged in, the login_required decorator will just
+    kick them to the login page automatically.
+    """
+    logout(request)
+    return HttpResponseRedirect(reverse("core:login"))
+
+
 class ApplicationChooserView(CreateView):
 
     model = AuthenticatedSession
     fields = ["app", "user"]
-    success_url = reverse_lazy("core:login")
+    success_url = reverse_lazy("core:logout")
 
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
