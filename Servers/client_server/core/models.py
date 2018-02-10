@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+from django.contrib.auth.models import User
 from django.db import models
 
 from django.contrib.auth.models import AbstractUser
@@ -28,15 +29,18 @@ class Application(models.Model):
             "name": self.name
         }
 
+    def create_session(self, user):
+        """
+        Creates an AuthenticatedSession object for this app and user. This
+        assumes that the user has already been validated.
+        """
+        return self.authenticatedsession_set.create(user=user)
 
-def create_session(self, user):
-    """
-    Creates an AuthenticatedSession object for this app and user. This
-    assumes that the user has already been validated.
-    """
-    return self.authenticatedsession_set.create(user=user)
+    def __str__(self):
+        return self.name
 
-class AuthUser(AbstractUser):
+
+class AuthUser(models.Model):
     """
     The basic user class that extends Django's base user class. This extension
     simply adds a copule things like security_questions and utility method.
@@ -47,21 +51,25 @@ class AuthUser(AbstractUser):
 
         authenticated_apps: A list of apps that this user can log on to.
     """
+    user = models.OneToOneField(User)
     security_questions = models.ManyToManyField(SecurityQuestion)
-    authenticated_apps = models.ManyToManyField(Application)
+    authenticated_apps = models.ManyToManyField(Application, blank=True)
 
     def json(self):
         return {
             "id": self.id,
             "pk": self.pk,
-            "first_name": self.first_name,
-            "last_name": self.last_name,
-            "username": self.username,
-            "password": self.password,
-            "groups": [group.name for group in self.groups.all()],
+            "first_name": self.user.first_name,
+            "last_name": self.user.last_name,
+            "username": self.user.username,
+            "password": self.user.password,
+            "groups": [group.name for group in self.user.groups.all()],
             "security_questions": [q.question for q in self.security_questions.all()],
             "authenticated_apps": [app.json() for app in self.authenticated_apps.all()]
         }
+
+    def __str__(self):
+        return str(self.user)
 
 
 class AuthenticatedSession(models.Model):

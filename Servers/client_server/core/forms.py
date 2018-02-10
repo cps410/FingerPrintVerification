@@ -21,7 +21,7 @@ class AuthenticationForm(forms.Form):
         matches an existing user.
         """
         username = self.cleaned_data.get("username", self.data["username"])
-        if not username or not AuthUser.objects.filter(username=username).exists():
+        if not username or not AuthUser.objects.filter(user__username=username).exists():
             raise forms.ValidationError("No user with that username was found in our system.")
         return username
 

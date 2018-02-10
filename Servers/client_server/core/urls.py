@@ -16,8 +16,9 @@ Including another URLconf
 from django.conf.urls import url, include
 from django.contrib import admin
 
-from core.views import LoginView
+from core.views import LoginView, ApplicationChooserView
 
 urlpatterns = [
-    url(r'^login$', LoginView.as_view(), name="login")
+    url(r'^login/$', LoginView.as_view(), name="login"),
+    url(r'^choose_app/$', ApplicationChooserView.as_view(), name="app_choose")
 ]
