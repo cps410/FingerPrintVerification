@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Login</title>
+  </head>
+  <body>
+    <form class="" action="{% url 'core:login' %}" method="post">
+      {% csrf_token %}
+      {{ form.errors }}
+      {{ form.username }}
+      {{ form.password }}
+      <button type="submit" value="submit">Login</button>
+    </form>
+  </body>
+</html>

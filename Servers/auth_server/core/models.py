@@ -14,6 +14,21 @@ class SecurityQuestion(models.Model):
     question = models.CharField(max_length=200)
     answer = models.CharField(max_length=200)
 
+
+class Application(models.Model):
+    """
+    An abstract representation of an application that a user can log in to.
+    """
+    name = models.CharField(max_length=50)
+
+    def json(self):
+        return {
+            "id": self.id,
+            "pk": self.pk,
+            "name": self.name
+        }
+
+        
 class AuthUser(AbstractUser):
     """
     The basic user class that extends Django's base user class. This extension
@@ -38,17 +53,4 @@ class AuthUser(AbstractUser):
             "groups": [group.name for group in self.groups.all()],
             "security_questions": [q.question for q in self.security_questions.all()],
             "authenticated_apps": [app.json() for app in self.authenticated_apps.all()]
-        }
-
-class Application(models.Model):
-    """
-    An abstract representation of an application that a user can log in to.
-    """
-    name = models.CharField(max_length=50)
-
-    def json(self):
-        return {
-            "id": self.id,
-            "pk": self.pk,
-            "name": self.name
         }

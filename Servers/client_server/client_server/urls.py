@@ -16,9 +16,7 @@ Including another URLconf
 from django.conf.urls import url, include
 from django.contrib import admin
 
-from core import urls as core_urls
-
 urlpatterns = [
     url(r'^helm/', admin.site.urls),
-    url(r'^core/', include(core_urls, namespace="core"))
+    url(r'^core/', include("core.urls", namespace="core"))
 ]
