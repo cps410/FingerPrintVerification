@@ -30,18 +30,35 @@ class Application(models.Model):
         }
 
 
+class AuthUserManager(models.Manager):
+
+    def authenticate(self, username, password):
+        """A cheap authentication function."""
+        try:
+            auth_user = self.get(user__username=username, password=password)
+            return auth_user.user
+        except AuthUser.DoesNotExist:
+            return self.none()
+
+
 class AuthUser(models.Model):
     """
     The basic user class that extends Django's base user class. This extension
     simply adds a copule things like security_questions and utility method.
 
     Fields:
+        password:           An override field for the users password. We are not
+                            using self.user.password in order to avoid the
+                            encryption.
         security_questions: The questions asked when a user forgot their
                             username and password.
 
         authenticated_apps: A list of apps that this user can log on to.
     """
+    objects = AuthUserManager()
+
     user = models.OneToOneField(User)
+    password = models.CharField(max_length=15)
     security_questions = models.ManyToManyField(SecurityQuestion)
     authenticated_apps = models.ManyToManyField(Application, blank=True)
 
@@ -52,7 +69,7 @@ class AuthUser(models.Model):
             "first_name": self.user.first_name,
             "last_name": self.user.last_name,
             "username": self.user.username,
-            "password": self.user.password,
+            "password": self.password,
             "groups": [group.name for group in self.user.groups.all()],
             "security_questions": [q.question for q in self.security_questions.all()],
             "authenticated_apps": [app.json() for app in self.authenticated_apps.all()]
