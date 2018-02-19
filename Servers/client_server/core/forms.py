@@ -36,7 +36,7 @@ class AuthenticationForm(forms.Form):
         cleaned_data = super(AuthenticationForm, self).clean()
         username = cleaned_data.get("username", self.data["username"])
         password = cleaned_data.get("password", self.data["password"])
-        user = authenticate(username=username, password=password)
+        user = AuthUser.objects.authenticate(username=username, password=password)
         if not user:
             raise forms.ValidationError("The password and username entered did not match.")
         else:
