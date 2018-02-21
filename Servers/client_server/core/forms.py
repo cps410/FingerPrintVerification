@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth import authenticate, login
 
-from core.models import AuthUser
+from Servers.common.auth_core.models import AuthUser
 
 class AuthenticationForm(forms.Form):
     """

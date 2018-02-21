@@ -7,7 +7,7 @@ from django.shortcuts import render
 
 from ezi.views import ModelCrudApiView, ApiView
 
-from core.models import AuthUser
+from Servers.common.auth_core.models import AuthUser
 
 class AuthUserApiView(ModelCrudApiView):
 

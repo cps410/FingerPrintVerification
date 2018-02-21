@@ -15,13 +15,13 @@ from django.views.generic import TemplateView
 from django.views.generic.edit import CreateView, FormView
 
 from core.forms import AuthenticationForm
-from core.models import AuthenticatedSession
+from Servers.common.auth_core.models import AuthenticatedSession
 
 from ezi.views import ApiView
 
 class LoginView(FormView):
 
-    template_name = "core/login.html"
+    template_name = "auth_core/login.html"
     form_class = AuthenticationForm
     success_url = reverse_lazy("core:app_choose")
 
