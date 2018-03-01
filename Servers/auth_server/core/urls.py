@@ -16,8 +16,9 @@ Including another URLconf
 from django.conf.urls import url, include
 from django.contrib import admin
 
-from core.views import AuthUserApiView
+from core.views import AuthUserApiView, get_csrf_token
 
 urlpatterns = [
     url(r'^api/user/', AuthUserApiView.as_view(), name="user"),
+    url(r'^api/csrf_token/$', get_csrf_token, name="get_csrf_token"),
 ]

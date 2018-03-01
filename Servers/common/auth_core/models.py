@@ -4,7 +4,7 @@ import json
 import requests
 
 from django.conf import settings
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from django.db import models
 
 from django.contrib.auth.models import AbstractUser
@@ -12,6 +12,7 @@ from django.contrib.auth.models import AbstractUser
 from ezi.utils import RestApiGetParameter
 
 from Servers.common.api_remotes.auth_server import AuthApiConnection
+from Servers.common.utils import SERVER_TYPE_CLIENT, SERVER_TYPE_CENTRAL
 
 class SecurityQuestion(models.Model):
     """
@@ -28,7 +29,7 @@ class SecurityQuestion(models.Model):
         return {
             "question": self.question,
             "answer": self.answer,
-            "auth_user": self.user.pk,
+            "user": self.user.pk,
         }
 
 
@@ -59,30 +60,6 @@ class Application(models.Model):
 
 class AuthUserManager(models.Manager):
 
-    def _query_auth_server(self, **kwargs):
-        """
-        Makes a call to the centralized auth server for users with the given
-        kwargs. This returns the users returned as json data.
-        """
-        # Build url for users
-        rest_api_get_params = [RestApiGetParameter(2, param_name, param_value) for
-                                param_name, param_value in kwargs.items()]
-        request_url = "/core/api/user/"
-        request_url = request_url + "?" + "&".join([ "=".join(param.format()) for param in rest_api_get_params ])
-
-        api_connection = AuthApiConnection(settings.AUTH_SERVER_HOST,
-                            settings.AUTH_SERVER_CREDENTIALS["username"],
-                            settings.AUTH_SERVER_CREDENTIALS["password"])
-        api_connection.login()
-
-        user_response = api_connection.get(request_url)
-
-        if user_response.status_code == 200:
-            users_json_text =  user_response.text
-            return json.loads(users_json_text)["response"]
-        else:
-            raise ValueError("Could not retrieve users from central server. Status Code: {}".format(user_response.status_code))
-
     def _read_users_from_auth_response(self, users_json):
         """
         Parses a Json object that represents a user into an AuthUser object.
@@ -94,17 +71,32 @@ class AuthUserManager(models.Manager):
             users = users | AuthUser.objects.filter(id=self.create_from_json(user_json).id)
         return users
 
+    def create_or_update_from_json(self, json):
+        if not json: return None
+        username = json["username"]
+        try:
+            auth_user = self.get(user__username=username)
+            auth_user.update_from_json(json)
+            return auth_user
+        except AuthUser.DoesNotExist:
+            return self.create_from_json(json)
+
     def create_from_json(self, json):
         """
         Creates a single AuthUser object from the given json. This json is
-        expected to be a single json object representing an AuthUser.
+        expected to be a single json object representing an AuthUser. The format
+        of this json is expected to be that generated in AuthUser.json()
+
+        If nothing is supplied in json, None will be returned.
         """
-        user = User.objects.create(username=json["username"], password=json["password"],
-                                    first_name=json["first_name"], last_name=json["last_name"],
-                                    email=json["email"])
+        if not json: return None
+        user = User.objects.create(username=json["username"], first_name=json["first_name"],
+                                    last_name=json["last_name"], email=json["email"])
+        user.set_password(json["password"])
+        user.save()
         auth_user = AuthUser.objects.create(user=user, password=json["password"])
         for app_json in json["authenticated_apps"]:
-            app, app_was_created = Application.objects.get_or_create(name=app_json["name"])
+            app = Application.objects.get(name=app_json["name"])
             auth_user.authenticated_apps.add(app)
 
         for question_json in json["security_questions"]:
@@ -126,7 +118,7 @@ class AuthUserManager(models.Manager):
             local_record = self.get(**kwargs)
             return local_record
         except AuthUser.DoesNotExist:
-            remote_records = self._read_users_from_auth_response(self._query_auth_server(**kwargs))
+            remote_records = self._read_users_from_auth_response(AuthApiConnection.get_users(**kwargs))
             if remote_records.count() > 1:
                 raise AuthUser.MultipleObjectsReturned("Multiple AuthUsers were found.")
             elif remote_records.count() < 1:
@@ -178,6 +170,33 @@ class AuthUser(models.Model):
     password = models.CharField(max_length=15)
     authenticated_apps = models.ManyToManyField("Application", blank=True)
 
+    def update_from_json(self, json):
+        """
+        Takes the data from json and updates this auth_user and its related
+        objects according to what's in json. The format of json is expected to
+        be identical to AuthUser.json().
+        """
+        user = self.user
+
+        user.first_name=json["first_name"]
+        user.last_name=json["last_name"]
+        user.email=json["email"]
+        user.username=json["username"]
+        user.save()
+
+        user.groups.set(Group.objects.filter(name__in=json["groups"]))
+
+        self.password=json["password"]
+        self.save()
+
+        self.authenticated_apps.set(Application.objects.filter(name__in=[app["name"] for app in json["authenticated_apps"]]))
+
+        self.securityquestion_set.all().delete()
+        for question_json in json["security_questions"]:
+            SecurityQuestion.objects.create(**question_json)
+        return self
+
+
     def json(self):
         return {
             "id": self.id,
@@ -192,10 +211,30 @@ class AuthUser(models.Model):
             "authenticated_apps": [app.json() for app in self.authenticated_apps.all()]
         }
 
+    def _save_with_auth_server(self):
+        if settings.SERVER_TYPE == SERVER_TYPE_CENTRAL:
+            # If this is on the central server, we are already saving "with the
+            # auth server" so this method is unneeded. It would also result in
+            # a recursion issue because the auth server would start making calls
+            # to itself then.
+            return None
+
+        try:
+            created_user_json = AuthApiConnection.save_user(self)
+            return created_user_json["id"]
+        except AuthApiConnection.ResponseError:
+            # Wait for later to save the user to the master database. Maybe the
+            # server will work then.
+            #
+            # TODO: Save the fact that this still needs to be saved.
+            return
+
     def save(self, *args, **kwargs):
         """Syncs the override password with this password."""
         self.user.set_password(self.password)
-        return super(AuthUser, self).save(*args, **kwargs)
+        auth_user = super(AuthUser, self).save(*args, **kwargs)
+        auth_server_assigned_id = self._save_with_auth_server()
+        return auth_user
 
     def __str__(self):
         return str(self.user)
