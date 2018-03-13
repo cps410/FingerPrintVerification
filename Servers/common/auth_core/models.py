@@ -142,12 +142,10 @@ class AuthUserManager(models.Manager):
 
         The AuthUsers returned will match the kwargs given.
         """
-        try:
-            local_records = self.filter(**kwargs)
-            return local_records
-        except AuthUser.DoesNotExist:
-            remote_records = self._read_users_from_auth_response(self._query_auth_server(**kwargs))
-            return remote_records
+        records = self.filter(**kwargs)
+        if not records:
+            records = self._read_users_from_auth_response(self._query_auth_server(**kwargs))
+        return records
 
     def authenticate(self, username, password):
         """A cheap authentication function."""
