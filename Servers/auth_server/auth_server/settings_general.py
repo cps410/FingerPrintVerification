@@ -11,11 +11,17 @@ https://docs.djangoproject.com/en/1.11/ref/settings/
 """
 
 import os
+from Servers.common import utils as common_utils
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 LOGIN_URL = "/helm/login/"
+
+# Desegnates which type of server this is (either a client server or the central
+# auth server). Options for this are found in Servers.common.utils with the name
+# SERVER_TYPE_****.
+SERVER_TYPE = common_utils.SERVER_TYPE_CENTRAL
 
 
 # Quick-start development settings - unsuitable for production
