@@ -93,7 +93,7 @@ def fingerprint_scan(request):
         while ( f.readImage() == False ):
             pass
         print('Downloading image (this may take a while)...')
-        imageDestination = '/home/logan/School/cps410/FingerPrintVerification/Images/fingerprint.bmp'
+        imageDestination = 'Images/fingerprint.bmp'
         f.downloadImage(imageDestination)
         print('The image was saved to "' + imageDestination + '".')
     except Exception as e:
@@ -106,3 +106,18 @@ class NewUserView(FormView):
     form_class=UserCreationForm
     template_name = "auth_core/newuser.html"
     success_url = reverse_lazy("core:app_choose")
+
+    def form_valid(self, form):
+        """
+        This is an override of the base classes form_valid method. This gets
+        called if the form is valid after a POST.
+
+        If this is called, it is assumed that the form is valid. In this case,
+        it is saved and then the super method is returned.
+
+        Just because the form is valid, does not mean the username and password
+        are correct (it just means the fields were individually valid)
+        """
+        self.newuser = form.save(self.request)
+        print self.newuser
+        return super(NewUserView, self).form_valid(form)

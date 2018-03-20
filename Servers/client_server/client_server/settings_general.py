@@ -111,5 +111,5 @@ STATIC_URL = '/static/'
 
 
 #FOR FINGERPRINT IMAGES
-MEDIA_ROOT= '/Images/'
-IMAGE_UPLOAD_PATH= '/Images/'
+MEDIA_ROOT= 'Images'
+IMAGE_UPLOAD_PATH= 'Images/'
