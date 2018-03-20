@@ -2,7 +2,8 @@ from django import forms
 from django.contrib.auth import authenticate, login
 
 from Servers.common.auth_core.models import AuthUser
-
+from core.models import NewUser
+from core.pyfingerprint import PyFingerprint
 class AuthenticationForm(forms.Form):
     """
     Form to log a user in to a client. This does not create the login session.
@@ -52,3 +53,9 @@ class AuthenticationForm(forms.Form):
         """
         login(request, self.user)
         return self.user
+
+class UserCreationForm(forms.ModelForm):
+    """The creation of a new User"""
+    class Meta:
+        model=NewUser
+        fields=['username', 'password', 'fingerprint_image']

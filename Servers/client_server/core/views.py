@@ -14,8 +14,10 @@ from django.views.decorators.debug import sensitive_post_parameters
 from django.views.generic import TemplateView
 from django.views.generic.edit import CreateView, FormView
 
-from core.forms import AuthenticationForm
+from core.forms import AuthenticationForm, UserCreationForm
 from Servers.common.auth_core.models import AuthenticatedSession
+from core.pyfingerprint import PyFingerprint
+
 
 from ezi.views import ApiView
 
@@ -73,3 +75,39 @@ class ApplicationChooserView(CreateView):
     def get_initial(self):
         """Sets the user as the initial argument to the hidden user field."""
         return {"user": self.request.user.id}
+
+# class NewUserView(FormView):
+#     """New User Creation"""
+#     form=UploadImageForm(request.POST or None, request.FILES or None)
+#     def fingerprint_upload(request):
+#         if request.method == 'POST':
+#             if form.is_valid:
+#                 request.session['image'] = request.POST['image']
+#                 return redirect('image:create')
+#
+#             ## initialize sensor
+#             # try:
+#             #     f = PyFingerprint('/dev/ttyUSB0', 57600, 0xFFFFFFFF, 0x00000000)
+#             #
+#             # except Exception as e:
+#             #     print('The fingerprint sensor failed.')
+#             #     print('Exception message: ' + str(e))
+#             #     exit(1)
+#             #
+#             # ## Tries to read image and download it
+#             # try:
+#             #     print('Waiting for finger...')
+#             #
+#             #     ## Wait that finger is read
+#             #     while ( f.readImage() == False ):
+#             #         pass
+#             #
+#             #     print('Downloading image (this may take a while)...')
+#             #
+#             #     imageDestination = '/home/logan/School/cps410/FingerPrintVerification/Images/fingerprint.bmp'
+#             #     f.downloadImage(imageDestination)
+#             #
+#             #     print('The image was saved to "' + imageDestination + '".')
+#
+#     def imageCreate(request):
+#         image = request.session.get('image')

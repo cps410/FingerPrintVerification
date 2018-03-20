@@ -11,7 +11,7 @@ This code has been changed from its original form for the course CPS410.
 """
 
 import tempfile
-from pyfingerprint.pyfingerprint import PyFingerprint
+from core.pyfingerprint import PyFingerprint
 
 
 ## Reads image and download it
@@ -42,7 +42,7 @@ try:
 
     print('Downloading image (this may take a while)...')
 
-    imageDestination =  tempfile.gettempdir() + '/fingerprint.bmp'
+    imageDestination = '/home/logan/School/cps410/FingerPrintVerification/Images/fingerprint.bmp'
     f.downloadImage(imageDestination)
 
     print('The image was saved to "' + imageDestination + '".')
