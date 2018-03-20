@@ -4,13 +4,29 @@
   <head>
     <meta charset="utf-8">
     <title>New User Creation</title>
+
+    {% load static %}
+    <link href="{% static 'css/fingerPrint.css' %}" rel="stylesheet" />
+
   </head>
   <body>
-    <form class="" enctype="multipart/form-data" method="POST">
+    <header>
+        <h2>
+            Create a User
+        </h2>
+    </header>
+    <div id="userForm">
+    <form enctype="multipart/form-data" method="POST">
       {% csrf_token %}
-      {{ form.username }}
-      {{ form.password }}
-      {{ form.fingerprint_image }}
+      <div>
+        {{ form.username }}
+      </div>
+      <div>
+        {{ form.password }}
+      </div>
+      <div>
+        {{ form.fingerprint_image }}
+      </div>
 
       <button type="submit" value="submit">Create User</button>
 
@@ -29,6 +45,6 @@
      };
      </script>
       <button id="fingerprint_button" name="fingerprint_button" onclick="clicked()">Scan FingerPrint</button>
-
+    </div>
   </body>
 </html>

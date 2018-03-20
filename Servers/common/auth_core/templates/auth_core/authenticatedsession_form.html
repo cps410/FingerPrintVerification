@@ -3,16 +3,27 @@
   <head>
     <meta charset="utf-8">
     <title>Login</title>
+
+    {% load static %}
+    <link href="{% static 'css/fingerPrint.css' %}" rel="stylesheet" />
+
   </head>
   <body>
-    <form class="" action="{% url 'core:app_choose' %}" method="post">
-      {% csrf_token %}
-      <div style="display: none;">
-        {{ form.user }}
-      </div>
-      {{ form.errors }}
-      {{ form.app }}
-      <button type="submit" value="submit">Choose app</button>
-    </form>
-  </body>
+    <header>
+        <h1 id="fingerPrint">
+            Choose your Application
+        </h1>
+    </header>
+    <main>
+        <form id="appForm" action="{% url 'core:app_choose' %}" method="post">
+          {% csrf_token %}
+          <div style="display: none;">
+            {{ form.user }}
+          </div>
+          {{ form.errors }}
+          {{ form.app }}
+          <button type="submit" value="submit">Choose app</button>
+        </form>
+     </main>
+   </body>
 </html>
