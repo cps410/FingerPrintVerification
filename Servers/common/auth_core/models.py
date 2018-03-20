@@ -167,6 +167,7 @@ class AuthUser(models.Model):
     user = models.OneToOneField(User)
     password = models.CharField(max_length=15)
     authenticated_apps = models.ManyToManyField("Application", blank=True)
+    fingerprint_image = models.ImageField(upload_to='Images/')
 
     def update_from_json(self, json):
         """
@@ -227,11 +228,21 @@ class AuthUser(models.Model):
             # TODO: Save the fact that this still needs to be saved.
             return
 
+    def save_with_both_user_containers(self, username, *args, **kwargs):
+        """
+        Creates the django.contrib.auth.models.User object before saving this
+        AuthUser so that the relationship can be set. Then the AuthUser will be
+        saved with a relationship to the created django User.
+        """
+        user = User.objects.create_user(username, "", self.password)
+        self.user = user
+        self.save()
+
     def save(self, *args, **kwargs):
         """Syncs the override password with this password."""
         self.user.set_password(self.password)
         auth_user = super(AuthUser, self).save(*args, **kwargs)
-        auth_server_assigned_id = self._save_with_auth_server()
+        # auth_server_assigned_id = self._save_with_auth_server()
         return auth_user
 
     def __str__(self):

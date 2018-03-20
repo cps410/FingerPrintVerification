@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth import authenticate, login
 
 from Servers.common.auth_core.models import AuthUser
-
+from core.pyfingerprint import PyFingerprint
 class AuthenticationForm(forms.Form):
     """
     Form to log a user in to a client. This does not create the login session.
@@ -52,3 +52,25 @@ class AuthenticationForm(forms.Form):
         """
         login(request, self.user)
         return self.user
+
+class UserCreationForm(forms.ModelForm):
+    """The creation of a new User"""
+    class Meta:
+        model=AuthUser
+        fields=['password', 'fingerprint_image']
+
+    username = forms.CharField(max_length=100)
+
+    def save(self, *args, **kwargs):
+        """
+        Override of the base ModelForm save method. This saves the instance
+        to be created by the input in the form.
+
+        Override:
+        Instead of just calling the save method, we need the django default
+        User to be created first. This is done in the
+        save_with_both_user_containers method so we want to call that.
+        """
+        auth_user = self.instance
+        auth_user.save_with_both_user_containers(self.cleaned_data["username"])
+        return auth_user

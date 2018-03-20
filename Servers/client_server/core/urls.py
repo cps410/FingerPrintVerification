@@ -16,10 +16,12 @@ Including another URLconf
 from django.conf.urls import url, include
 from django.contrib import admin
 
-from core.views import LoginView, logout_view, ApplicationChooserView
+from core.views import LoginView, logout_view, ApplicationChooserView, NewUserView, fingerprint_scan
 
 urlpatterns = [
     url(r'^login/$', LoginView.as_view(), name="login"),
+    url(r'^newuser/$', NewUserView.as_view(), name="usercreation"),
+    url(r'^newuser/fingerscan/$', fingerprint_scan, name="fingerscan"),
     url(r'^logout/$', logout_view, name="logout"),
     url(r'^choose_app/$', ApplicationChooserView.as_view(), name="app_choose")
 ]
