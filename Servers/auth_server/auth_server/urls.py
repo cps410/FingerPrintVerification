@@ -17,8 +17,10 @@ from django.conf.urls import url, include
 from django.contrib import admin
 
 from core import urls as core_urls
+from server_tracking import urls as server_tracking_urls
 
 urlpatterns = [
     url(r'^helm/', admin.site.urls),
-    url(r'^core/', include(core_urls, namespace="core"))
+    url(r'^core/', include(core_urls, namespace="core")),
+    url(r'^servers/', include(server_tracking_urls, namespace="servers")),
 ]

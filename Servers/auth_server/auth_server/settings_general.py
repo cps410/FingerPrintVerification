@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'Servers.common.auth_core',
     'Servers.common.api_remotes',
     'core',
+    'server_tracking',
     'ezi',
 ]
 
