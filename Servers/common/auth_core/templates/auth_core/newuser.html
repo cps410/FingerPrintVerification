@@ -4,9 +4,18 @@
   <head>
     <meta charset="utf-8">
     <title>New User Creation</title>
+
+    <link href="fingerPrint.css" rel="stylesheet" />
+
   </head>
   <body>
-    <form class="" enctype="multipart/form-data" method="POST">
+    <header>
+        <h2>
+            Create a User
+        </h2>
+    </header>
+    <div id="userForm">
+    <form enctype="multipart/form-data" method="POST">
       {% csrf_token %}
       {{ form.username }}
       {{ form.password }}
@@ -29,6 +38,6 @@
      };
      </script>
       <button id="fingerprint_button" name="fingerprint_button" onclick="clicked()">Scan FingerPrint</button>
-
+    </div>
   </body>
 </html>

@@ -1,0 +1,66 @@
+body {
+    background-color: #00A2E8;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+h1 {
+    padding-top:20px;
+    color: #FFFFFF;
+    font-size: 75px;
+}
+
+h2 {
+    padding-left: 40px;
+    padding-top:20px;
+    color: #FFFFFF;
+}
+
+#userForm {
+    padding-left: 40px;
+}
+
+#appForm {
+    text-align:center;
+}
+
+#login {
+    padding-left:40px;
+}
+
+#fingerPrint {
+    text-align: center;
+}
+
+img {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 20%;
+}
+
+span {
+    color: #FFFFFF;
+    font-size: 20px;
+}
+
+#formPadder {   
+    padding-left:40px;
+}
+
+#loginLink {
+    padding-top: 25px;
+    font-size:20px;
+    text-align: center;
+    color: #0030A2;
+}
+
+a {
+    font-style: italic;
+    color: #0030A2;
+    text-decoration: none;
+}
+
+a:hover {
+    color: #FFFFFF;
+}
+

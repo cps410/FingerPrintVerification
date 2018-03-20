@@ -3,16 +3,30 @@
   <head>
     <meta charset="utf-8">
     <title>Login</title>
+
+    <link href="fingerPrint.css" rel="stylesheet" />
+
   </head>
   <body>
-    <form class="" action="{% url 'core:app_choose' %}" method="post">
-      {% csrf_token %}
-      <div style="display: none;">
-        {{ form.user }}
-      </div>
-      {{ form.errors }}
-      {{ form.app }}
-      <button type="submit" value="submit">Choose app</button>
-    </form>
-  </body>
+    <header>
+        <h1 id="fingerPrint">
+            Choose your Application
+        </h1>
+    </header>
+    <main>
+        <form id="appForm" action="{% url 'core:app_choose' %}" method="post">
+          {% csrf_token %}
+          <div style="display: none;">
+            {{ form.user }}
+          </div>
+          {{ form.errors }}
+          {{ form.app }}
+          <button type="submit" value="submit">Choose app</button>
+        </form>
+        <div id="loginLink">
+            Cant login using Fingerprint? Try
+            <a href="login.html">this</a>
+        </div>
+     </main>  
+   </body>
 </html>

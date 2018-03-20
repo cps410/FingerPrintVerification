@@ -3,14 +3,27 @@
   <head>
     <meta charset="utf-8">
     <title>Login</title>
+
+    <link href="fingerPrint.css" rel="stylesheet" />
+
   </head>
   <body>
-    <form class="" action="{% url 'core:login' %}" method="post">
-      {% csrf_token %}
-      {{ form.errors }}
-      {{ form.username }}
-      {{ form.password }}
-      <button type="submit" value="submit">Login</button>
+    <header>
+        <h1 id="login">
+        Login
+        </h1>
+    </header>
+    <div id="formPadder">
+        <form class="" action="{% url 'core:login' %}" method="post">
+          {% csrf_token %}
+          {{ form.errors }}
+          <br>
+          <span>Username:</span> {{ form.username }}
+          <br>
+          <span>Password:</span> {{ form.password }}
+          <br>
+          <button type="submit" value="submit">Login</button>
+    </div>
     </form>
   </body>
 </html>
