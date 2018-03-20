@@ -3,14 +3,28 @@
   <head>
     <meta charset="utf-8">
     <title>Login</title>
+
+    {% load static %}
+    <link href="{% static 'css/fingerPrint.css' %}" rel="stylesheet" />
+
   </head>
   <body>
-    <form class="" action="{% url 'core:create_local_auth_user' %}" method="post">
-      {% csrf_token %}
-      {{ form.errors }}
-      {{ form.username }}
-      {{ form.password }}
-      <button type="submit" value="submit">Create local auth user</button>
-    </form>
+    <header>
+        <h1 id="login">
+        Login
+        </h1>
+    </header>
+    <div id="formPadder">
+        <form class="" action="{% url 'core:create_local_auth_user' %}" method="post">
+          {% csrf_token %}
+          {{ form.errors }}
+          <br>
+          <span>Username:</span> {{ form.username }}
+          <br>
+          <span>Password:</span> {{ form.password }}
+          <br>
+          <button type="submit" value="submit">Create local user info.</button>
+        </form>
+    </div>
   </body>
 </html>

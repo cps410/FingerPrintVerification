@@ -5,7 +5,8 @@
     <meta charset="utf-8">
     <title>New User Creation</title>
 
-    <link href="fingerPrint.css" rel="stylesheet" />
+    {% load static %}
+    <link href="{% static 'css/fingerPrint.css' %}" rel="stylesheet" />
 
   </head>
   <body>
@@ -17,9 +18,15 @@
     <div id="userForm">
     <form enctype="multipart/form-data" method="POST">
       {% csrf_token %}
-      {{ form.username }}
-      {{ form.password }}
-      {{ form.fingerprint_image }}
+      <div>
+        {{ form.username }}
+      </div>
+      <div>
+        {{ form.password }}
+      </div>
+      <div>
+        {{ form.fingerprint_image }}
+      </div>
 
       <button type="submit" value="submit">Create User</button>
 

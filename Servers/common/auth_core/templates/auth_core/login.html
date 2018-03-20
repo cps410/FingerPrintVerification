@@ -4,7 +4,8 @@
     <meta charset="utf-8">
     <title>Login</title>
 
-    <link href="fingerPrint.css" rel="stylesheet" />
+    {% load static %}
+    <link href="{% static 'css/fingerPrint.css' %}" rel="stylesheet" />
 
   </head>
   <body>
@@ -23,7 +24,11 @@
           <span>Password:</span> {{ form.password }}
           <br>
           <button type="submit" value="submit">Login</button>
+        </form>
+        <div id="loginLink">
+            Cant login using Fingerprint? Try
+            <a href="{% url 'core:create_local_auth_user' %}">this</a>
+        </div>
     </div>
-    </form>
   </body>
 </html>
