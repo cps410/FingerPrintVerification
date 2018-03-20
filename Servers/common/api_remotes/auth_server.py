@@ -3,6 +3,8 @@ import requests
 
 from django.conf import settings
 
+from ezi.utils import RestApiGetParameter
+
 class AuthApiConnection:
 
     class ResponseError(Exception):
@@ -115,9 +117,11 @@ class AuthApiConnection:
                                 param_name, param_value in kwargs.items()]
         request_url = cls.URLS.USER_ACCESS + "?" + "&".join([ "=".join(param.format()) for param in rest_api_get_params ])
 
+        from Servers.common.api_remotes.models import ClientServer
+        client = ClientServer.objects.all()[0]
         api_connection = cls(settings.AUTH_SERVER_HOST,
-                            settings.AUTH_SERVER_CREDENTIALS["username"],
-                            settings.AUTH_SERVER_CREDENTIALS["password"])
+                            client.username,
+                            client.password)
         api_connection.login()
 
         user_response = api_connection.get(request_url)
