@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+import serial
+
 from django.conf import settings
 from django.contrib.auth import get_user_model, logout
 from django.contrib.auth.decorators import login_required
@@ -15,14 +17,15 @@ from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.debug import sensitive_post_parameters
 from django.views.generic import TemplateView
 from django.views.generic.edit import CreateView, FormView
-import serial
-from core.forms import AuthenticationForm, UserCreationForm
+
+from core.forms import AuthenticationForm, UserCreationForm, LocalSuperAuthUserCreationForm
 from Servers.common.auth_core.models import AuthenticatedSession
 from core.pyfingerprint import PyFingerprint
 
 
 from ezi.views import ApiView
 
+@method_decorator(login_required, name="dispatch")
 class LoginView(FormView):
 
     template_name = "auth_core/login.html"
@@ -121,3 +124,39 @@ class NewUserView(FormView):
         self.newuser = form.save()
         print self.newuser
         return super(NewUserView, self).form_valid(form)
+
+
+@method_decorator(login_required(login_url=reverse_lazy("admin:login")), name="dispatch")
+class CreateLocalAuthUser(FormView):
+    """
+    Form to create a local auth user for a super user without saving it to the
+    central server.
+    """
+    form_class = LocalSuperAuthUserCreationForm
+    template_name = "auth_core/create_local_auth_user.html"
+    success_url = "admin:auth_core_authuser_change"
+
+    def dispatch(self, request, *args, **kwargs):
+        """
+        Override of base FormView dispatch to ensure that the logged in user
+        is a staff member and a superuser. If not, they are redirected to the
+        login page.
+        """
+        if not (request.user.is_staff and request.user.is_superuser):
+            return HttpResponseRedirect(reverse("admin:login"))
+        return super(CreateLocalAuthUser, self).dispatch(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        """
+        This is an override of the base classes form_valid method. This gets
+        called if the form is valid after a POST.
+
+        If this is called, it is assumed that the form is valid. In this case,
+        it is saved and then the super method is returned.
+
+        Override:
+        This adds the primary key to the success_url as an argument to the
+        reverse_lazy call.
+        """
+        auth_user = form.save()
+        return HttpResponseRedirect(reverse(self.success_url, args=[auth_user.pk]))

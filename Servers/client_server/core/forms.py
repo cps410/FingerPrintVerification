@@ -1,5 +1,6 @@
 from django import forms
 from django.contrib.auth import authenticate, login
+from django.contrib.auth.models import User
 
 from Servers.common.auth_core.models import AuthUser
 from core.pyfingerprint import PyFingerprint
@@ -73,4 +74,57 @@ class UserCreationForm(forms.ModelForm):
         """
         auth_user = self.instance
         auth_user.save_with_both_user_containers(self.cleaned_data["username"])
+        return auth_user
+
+
+class LocalSuperAuthUserCreationForm(forms.Form):
+    """
+    Form to log a user in to a client. This does not create the login session.
+    It just validates the user. After they are validated by this, the user will
+    have to be redirected to a page to select their app that they want to log in
+    to. That page is where the AuthenticatedSession object will be created after
+    they select their app.
+    """
+
+    user = None # Set in the clean method.
+    username = forms.CharField(max_length=100)
+    password = forms.CharField(max_length=100, widget=forms.PasswordInput)
+
+    def clean_username(self):
+        """
+        Cleans the username and makes sure that it is a valid username that
+        matches an existing user.
+        """
+        username = self.cleaned_data.get("username", self.data["username"])
+        if not username or not User.objects.filter(username=username).exists():
+            raise forms.ValidationError("No user with that username was found in our system.")
+        return username
+
+    def clean(self):
+        """
+        Override of the base classes clean method.
+
+        Override: This override authenticates the username and password. If it
+        is not valid, a ValidationError is thrown. If it is valid, then this
+        classes user attribute is set to the user that is authenticated.
+        """
+        cleaned_data = super(LocalSuperAuthUserCreationForm, self).clean()
+        username = cleaned_data.get("username", self.data["username"])
+        password = cleaned_data.get("password", self.data["password"])
+        user = authenticate(username=username, password=password)
+        if not user:
+            raise forms.ValidationError("The password and username entered did not match.")
+        else:
+            self.user = user
+        return cleaned_data
+
+    def save(self):
+        """
+        Override of the base classes save method.
+
+        Override: Assuming the clean method has already been called, which sets
+        this forms user to log in, this method will log that user in.
+        """
+        auth_user = AuthUser(user=self.user, password=self.cleaned_data["password"])
+        auth_user.save(save_to_central_server=False)
         return auth_user

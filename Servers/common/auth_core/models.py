@@ -167,7 +167,7 @@ class AuthUser(models.Model):
     user = models.OneToOneField(User)
     password = models.CharField(max_length=15)
     authenticated_apps = models.ManyToManyField("Application", blank=True)
-    fingerprint_image = models.ImageField(upload_to='Images/')
+    fingerprint_image = models.ImageField(upload_to='Images/', blank=True, null=True)
 
     def update_from_json(self, json):
         """
@@ -239,10 +239,24 @@ class AuthUser(models.Model):
         self.save()
 
     def save(self, *args, **kwargs):
-        """Syncs the override password with this password."""
+        """
+        Syncs the override password with this password.
+
+        If save_to_central_server is provided in kwargs and is False, this
+        method will not save this AuthUser to the central server. By default, it
+        will attempt to save it to the central server.
+        """
         self.user.set_password(self.password)
+
+        if "save_to_central_server" in kwargs.keys():
+            save_to_central_server = kwargs.pop("save_to_central_server", True)
+        else:
+            save_to_central_server = True
+
         auth_user = super(AuthUser, self).save(*args, **kwargs)
-        auth_server_assigned_id = self._save_with_auth_server()
+
+        if save_to_central_server:
+            auth_server_assigned_id = self._save_with_auth_server()
         return auth_user
 
     def __str__(self):
