@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
@@ -7,13 +8,14 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.urlresolvers import reverse, reverse_lazy
 from django.http import HttpResponseRedirect
+from django.http import HttpResponse
 from django.shortcuts import render
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.debug import sensitive_post_parameters
 from django.views.generic import TemplateView
 from django.views.generic.edit import CreateView, FormView
-
+import serial
 from core.forms import AuthenticationForm, UserCreationForm
 from Servers.common.auth_core.models import AuthenticatedSession
 from core.pyfingerprint import PyFingerprint
@@ -65,7 +67,6 @@ class ApplicationChooserView(CreateView):
 
     model = AuthenticatedSession
     fields = ["app", "user"]
-    success_url = reverse_lazy("core:logout")
 
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
@@ -76,38 +77,32 @@ class ApplicationChooserView(CreateView):
         """Sets the user as the initial argument to the hidden user field."""
         return {"user": self.request.user.id}
 
-# class NewUserView(FormView):
-#     """New User Creation"""
-#     form=UploadImageForm(request.POST or None, request.FILES or None)
-#     def fingerprint_upload(request):
-#         if request.method == 'POST':
-#             if form.is_valid:
-#                 request.session['image'] = request.POST['image']
-#                 return redirect('image:create')
-#
-#             ## initialize sensor
-#             # try:
-#             #     f = PyFingerprint('/dev/ttyUSB0', 57600, 0xFFFFFFFF, 0x00000000)
-#             #
-#             # except Exception as e:
-#             #     print('The fingerprint sensor failed.')
-#             #     print('Exception message: ' + str(e))
-#             #     exit(1)
-#             #
-#             # ## Tries to read image and download it
-#             # try:
-#             #     print('Waiting for finger...')
-#             #
-#             #     ## Wait that finger is read
-#             #     while ( f.readImage() == False ):
-#             #         pass
-#             #
-#             #     print('Downloading image (this may take a while)...')
-#             #
-#             #     imageDestination = '/home/logan/School/cps410/FingerPrintVerification/Images/fingerprint.bmp'
-#             #     f.downloadImage(imageDestination)
-#             #
-#             #     print('The image was saved to "' + imageDestination + '".')
-#
-#     def imageCreate(request):
-#         image = request.session.get('image')
+def fingerprint_scan(request):
+# initialize sensor
+    try:
+        f = PyFingerprint('/dev/ttyUSB0', 57600, 0xFFFFFFFF, 0x00000000)
+
+    except Exception as e:
+        print('The fingerprint sensor failed.')
+        print('Exception message: ' + str(e))
+
+    ## Tries to read image and download it
+    try:
+        print('Waiting for finger...')
+        ## Wait that finger is read
+        while ( f.readImage() == False ):
+            pass
+        print('Downloading image (this may take a while)...')
+        imageDestination = '/home/logan/School/cps410/FingerPrintVerification/Images/fingerprint.bmp'
+        f.downloadImage(imageDestination)
+        print('The image was saved to "' + imageDestination + '".')
+    except Exception as e:
+        print('Exception message: ' + str(e))
+        return HttpResponse("did not work")
+    return HttpResponse("worked, image is now available in the temp folder /Images/")
+
+class NewUserView(FormView):
+    """New User Creation"""
+    form_class=UserCreationForm
+    template_name = "auth_core/newuser.html"
+    success_url = reverse_lazy("core:app_choose")

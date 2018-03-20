@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+{% load templates %}
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>New User Creation</title>
+  </head>
+  <body>
+    <form class="" enctype="multipart/form-data" method="POST">
+      {% csrf_token %}
+      {{ form.username }}
+      {{ form.password }}
+      {{ form.fingerprint_image }}
+
+      <button type="submit" value="submit">Create User</button>
+
+    </form>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script type="text/javascript">
+      function clicked()
+      {
+          console.log("CLICKED");
+            $.ajax({
+             url: "fingerscan/",
+             success: function(){
+                alert("Image is now in the directory");
+            }
+          });
+     };
+     </script>
+      <button id="fingerprint_button" name="fingerprint_button" onclick="clicked()">Scan FingerPrint</button>
+
+  </body>
+</html>
