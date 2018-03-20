@@ -242,7 +242,7 @@ class AuthUser(models.Model):
         """Syncs the override password with this password."""
         self.user.set_password(self.password)
         auth_user = super(AuthUser, self).save(*args, **kwargs)
-        # auth_server_assigned_id = self._save_with_auth_server()
+        auth_server_assigned_id = self._save_with_auth_server()
         return auth_user
 
     def __str__(self):
