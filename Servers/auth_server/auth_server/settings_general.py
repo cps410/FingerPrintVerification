@@ -38,7 +38,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'Servers.common.auth_core',
+    'Servers.common.api_remotes',
     'core',
+    'server_tracking',
     'ezi',
 ]
 
