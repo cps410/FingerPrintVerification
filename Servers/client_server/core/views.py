@@ -84,7 +84,7 @@ def fingerprint_scan(request):
 
     except Exception as e:
         print('The fingerprint sensor failed.')
-        print('Exception message: ' + str(e))
+        print('Exception message: ' + str(e))password
 
     ## Tries to read image and download it
     try:
@@ -103,9 +103,9 @@ def fingerprint_scan(request):
 
 class NewUserView(FormView):
     """New User Creation"""
-    form_class=UserCreationForm
+    form_class = UserCreationForm
     template_name = "auth_core/newuser.html"
-    success_url = reverse_lazy("core:app_choose")
+    success_url = reverse_lazy("core:login")
 
     def form_valid(self, form):
         """
@@ -118,6 +118,6 @@ class NewUserView(FormView):
         Just because the form is valid, does not mean the username and password
         are correct (it just means the fields were individually valid)
         """
-        self.newuser = form.save(self.request)
+        self.newuser = form.save()
         print self.newuser
         return super(NewUserView, self).form_valid(form)
