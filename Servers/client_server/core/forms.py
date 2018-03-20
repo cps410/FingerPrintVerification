@@ -2,7 +2,6 @@ from django import forms
 from django.contrib.auth import authenticate, login
 
 from Servers.common.auth_core.models import AuthUser
-from core.models import NewUser
 from core.pyfingerprint import PyFingerprint
 class AuthenticationForm(forms.Form):
     """

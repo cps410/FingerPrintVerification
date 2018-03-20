@@ -84,7 +84,7 @@ def fingerprint_scan(request):
 
     except Exception as e:
         print('The fingerprint sensor failed.')
-        print('Exception message: ' + str(e))password
+        print('Exception message: ' + str(e))
 
     ## Tries to read image and download it
     try:

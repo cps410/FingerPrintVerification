@@ -136,7 +136,7 @@ class AuthUserManager(models.Manager):
         """
         records = self.filter(**kwargs)
         if not records:
-            records = self._read_users_from_auth_response(self._query_auth_server(**kwargs))
+            records = self._read_users_from_auth_response(AuthApiConnection.get_users(**kwargs))
         return records
 
     def authenticate(self, username, password):
