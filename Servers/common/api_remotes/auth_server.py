@@ -13,6 +13,7 @@ class AuthApiConnection:
         LOGIN = "/helm/login/?next=/helm/"
         USER_ACCESS = "/core/api/user/"
         CSRF_ACCESS = "/core/api/csrf_token/"
+        SERVER_ACCESS = "/servers/api/"
 
     host = None
     username = None
@@ -86,9 +87,11 @@ class AuthApiConnection:
 
     @classmethod
     def save_user(cls, user):
+        from Servers.common.api_remotes.models import ClientServer
+        client = ClientServer.objects.all()[0]
         api_connection = cls(settings.AUTH_SERVER_HOST,
-                            settings.AUTH_SERVER_CREDENTIALS["username"],
-                            settings.AUTH_SERVER_CREDENTIALS["password"])
+                            client.username,
+                            client.password)
         api_connection.login()
 
         put_data = {"auth_user": json.dumps(user.json())}
@@ -125,3 +128,25 @@ class AuthApiConnection:
             return json.loads(users_json_text)["response"]
         else:
             raise AuthApiConnection.ResponseError("Could not retrieve users from central server. Status Code: {}".format(user_response.status_code))
+
+    @classmethod
+    def register_client_with_auth(cls, client_server, superuser):
+        """
+        Saves a ClientServer object on the auth server. This must be registered
+        by a superuser using their cridentials.
+        """
+        api_connection = cls(settings.AUTH_SERVER_HOST,
+                            superuser.username, superuser.authuser.password)
+        api_connection.login()
+
+        put_data = {
+            "client_server": json.dumps(client_server.json())
+        }
+        client_server_save_response = api_connection.put(cls.URLS.SERVER_ACCESS, put_data)
+        del(api_connection)
+
+        if client_server_save_response.status_code == 200:
+            client_server_save_text = client_server_save_response.text
+            return json.loads(client_server_save_text)
+        else:
+            raise AuthApiConnection.ResponseError("Could not register this client server.")
