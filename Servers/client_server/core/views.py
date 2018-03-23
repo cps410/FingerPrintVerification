@@ -25,7 +25,6 @@ from core.pyfingerprint import PyFingerprint
 
 from ezi.views import ApiView
 
-@method_decorator(login_required, name="dispatch")
 class LoginView(FormView):
 
     template_name = "auth_core/login.html"
