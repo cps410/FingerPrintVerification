@@ -70,6 +70,7 @@ class ApplicationChooserView(CreateView):
 
     model = AuthenticatedSession
     fields = ["app", "user"]
+    success_url = reverse_lazy("core:logout")
 
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):

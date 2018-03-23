@@ -96,7 +96,7 @@ class AuthUserManager(models.Manager):
         user.save()
         auth_user = AuthUser.objects.create(user=user, password=json["password"])
         for app_json in json["authenticated_apps"]:
-            app = Application.objects.get(name=app_json["name"])
+            app, created = Application.objects.get_or_create(name=app_json["name"])
             auth_user.authenticated_apps.add(app)
 
         for question_json in json["security_questions"]:
@@ -256,7 +256,10 @@ class AuthUser(models.Model):
         auth_user = super(AuthUser, self).save(*args, **kwargs)
 
         if save_to_central_server:
-            auth_server_assigned_id = self._save_with_auth_server()
+            try:
+                auth_server_assigned_id = self._save_with_auth_server()
+            except:
+                print "Could not save {} to central database.".format(self.user.username)
         return auth_user
 
     def __str__(self):
