@@ -7,7 +7,7 @@ SECRET_KEY = 'v1z!!79ja%a^hd&9i6eouu-tkhy%+s)lgs4$)cr9=3ov@e+@i('
 DEBUG = True
 
 # AUTH_SERVER_HOST = "http://localhost:8000"
-AUTH_SERVER_HOST = "http://141.209.48.202:8000"
+AUTH_SERVER_HOST = "http://35.32.115.138:8000"
 
 # Database
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases

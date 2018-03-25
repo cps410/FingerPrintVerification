@@ -775,7 +775,6 @@ class PyFingerprint(object):
 
         self.__writePacket(FINGERPRINT_COMMANDPACKET, packetPayload)
         receivedPacket = self.__readPacket()
-
         receivedPacketType = receivedPacket[0]
         receivedPacketPayload = receivedPacket[1]
 
@@ -808,7 +807,6 @@ class PyFingerprint(object):
 
         @return boolean
         """
-
         packetPayload = (
             FINGERPRINT_CREATETEMPLATE,
         )

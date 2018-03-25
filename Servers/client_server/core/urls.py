@@ -16,7 +16,7 @@ Including another URLconf
 from django.conf.urls import url, include
 from django.contrib import admin
 
-from core.views import LoginView, logout_view, ApplicationChooserView, NewUserView, fingerprint_scan, CreateLocalAuthUser
+from core.views import LoginView, logout_view, ApplicationChooserView, NewUserView, fingerprint_scan, fingerprint_enrollment, CreateLocalAuthUser
 
 urlpatterns = [
     url(r'^login/$', LoginView.as_view(), name="login"),
