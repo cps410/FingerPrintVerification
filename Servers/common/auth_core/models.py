@@ -168,6 +168,7 @@ class AuthUser(models.Model):
     password = models.CharField(max_length=15)
     authenticated_apps = models.ManyToManyField("Application", blank=True)
     fingerprint_image = models.ImageField(upload_to='Images/', blank=True, null=True)
+    index_position = models.IntegerField(blank=True, null=True)
 
     def update_from_json(self, json):
         """
