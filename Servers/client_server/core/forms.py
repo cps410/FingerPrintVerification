@@ -58,7 +58,7 @@ class UserCreationForm(forms.ModelForm):
     """The creation of a new User"""
     class Meta:
         model=AuthUser
-        fields=['password', 'fingerprint_image']
+        fields=['password', 'fingerprint_image', "index_position"]
 
     username = forms.CharField(max_length=100)
 
@@ -73,7 +73,8 @@ class UserCreationForm(forms.ModelForm):
         save_with_both_user_containers method so we want to call that.
         """
         auth_user = self.instance
-        auth_user.save_with_both_user_containers(self.cleaned_data["username"])
+        print self.cleaned_data["index_position"]
+        auth_user.save_with_both_user_containers(self.cleaned_data["username"], self.cleaned_data["index_position"])
         return auth_user
 
 
